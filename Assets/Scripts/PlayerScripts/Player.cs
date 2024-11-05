@@ -1,23 +1,16 @@
-using Cinemachine.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public enum PlayableCharacter
-{ 
-    REIMU, // Yukari
-    MARISA, // Okina
-    SUMIREKO, // Kasen
-    RIN, // Hidden
-}
+
 
 
 public class Player : MonoBehaviour
 {
     public static Player Instance;
     public PlayableCharacter Character;
+    public SubPlayableCharacter SubCharacter;
     private InputSchema InInstance;
     private GameManager GameInstance;
 
@@ -35,11 +28,13 @@ public class Player : MonoBehaviour
     [SerializeField] float PlayerInvinsibleTime;
     [SerializeField] float PlayerInvinsibleCurTime;
 
-    [SerializeField] int PlayerProjectile;
+    [SerializeField] Bullet MainBullet;
+    [SerializeField] int PlayerProjectileFactor;
     [SerializeField] float PlayerProjectileCooltime;
     [SerializeField] float PlayerProjectileCurCooltime;
 
-    [SerializeField] int PlayerSubProjectile;
+    [SerializeField] Bullet SubBullet;
+    [SerializeField] int PlayerSubProjectileFactor;
     [SerializeField] float PlayerSubProjectileCooltime;
     [SerializeField] float PlayerSubProjectileCurCooltime;
 
@@ -49,9 +44,6 @@ public class Player : MonoBehaviour
     [SerializeField] Vector2 InputVector;
 
     [SerializeField] SpriteRenderer spr;
-    //[SerializeField] float PlayerSpeed;
-    //[SerializeField] float PlayerSpeed;
-    //[SerializeField] float PlayerSpeed;
 
     private void Awake()
     {
@@ -75,9 +67,6 @@ public class Player : MonoBehaviour
     private void CharacterInit()
     {
         GameInstance = GameManager.Instance;
-
-        Debug.LogWarning("Player :: Directed Access To InputControl, Under Script will be deprecated. In Future.");
-        GameInstance.InputContol(InputSchemaMap.PLAYER);
 
 
 
@@ -117,17 +106,9 @@ public class Player : MonoBehaviour
 
     private void PlayerMove()
     {
-        //if (InputVector == Vector2.zero)
-        //{
-        //    rigid.velocity = Vector2.zero;
-        //    return;
-        //}
-
-
-
 
         Vector2 Force = InputVector * InputSpeed;
-        rigid.velocity = Force;
+        rigid.linearVelocity = Force;
     }
 
     #region Action Mapping

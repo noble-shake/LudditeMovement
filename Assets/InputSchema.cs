@@ -11,6 +11,7 @@ public enum InputSchemaMap
     PLAYER,
     PAUSE,
     MENU,
+    None,
 }
 
 
@@ -60,6 +61,13 @@ public class InputSchema : ScriptableObject, IBluePrint.IPauseActions, IBluePrin
         inputMap.Menu.Disable();
     }
 
+    private void SetDisable()
+    {
+        inputMap.Player.Disable();
+        inputMap.Pause.Disable();
+        inputMap.Menu.Disable();
+    }
+
 
     public void InputWrapper(InputSchemaMap _map)
     {
@@ -73,6 +81,10 @@ public class InputSchema : ScriptableObject, IBluePrint.IPauseActions, IBluePrin
                 break;
             case InputSchemaMap.MENU:
                 SetMainMenu();
+                break;
+            case InputSchemaMap.None:
+            default:
+                SetDisable();
                 break;
         }
     }

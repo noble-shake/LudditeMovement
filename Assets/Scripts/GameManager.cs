@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Entities;
 
 
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    public enumDifficulty SelectedDifficulty;
+    public PlayableCharacter SelectedCharacter;
+    public SubPlayableCharacter SelectedSubCharacter;
+
     [SerializeField] private InputSchema InInstance;
 
     public float LEFT_SCREEN = -2f;
@@ -36,6 +41,9 @@ public class GameManager : MonoBehaviour
         InInstance.InputWrapper(_map);
     }
 
-
+    public void GameInitialize()
+    {
+        
+    }
 
 }

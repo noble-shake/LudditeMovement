@@ -2,48 +2,109 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class CharacterInfo
+public enum enumMenuTransition
 { 
-    public PlayableCharacter character;
-    public Sprite Image;
-
+    LoadingMenu,
+    MainMenu,
+    SelectDifficulty,
+    SelectCharacter,
+    SelectReplay,
+    SelectPractice,
+    Option,
+    Credit,
+    EndingA,
+    EndingB,
+    EndingC,
 }
+
 
 
 public class ResourceManager : MonoBehaviour
 {
-    [SerializeField] List<CharacterInfo> CharacterDataset;
-    private Dictionary<PlayableCharacter, CharacterInfo> Characters;
+    public static ResourceManager Instance;
+
+    [Header("Menu Prefabs")]
+    [SerializeField] public SceneTransition LoadingMenu;
+    [SerializeField] public DisplayTransition displayTransition;
+
+
+    [Header("Character Prefabs")]
+    public bool HiddenUnlock;
+    [SerializeField] public List<PlayableSO> CharacterDataset;
+    [SerializeField] public List<SubPlayableSO> SubCharacterDataset;
+    public Dictionary<PlayableCharacter, PlayableSO> Characters;
+    public Dictionary<SubPlayableCharacter, SubPlayableSO> SubCharacters;
 
     private void InitializeResource()
-    { 
-        Characters = new Dictionary<PlayableCharacter, CharacterInfo>();
+    {
+        Characters = new Dictionary<PlayableCharacter, PlayableSO>();
+        SubCharacters = new Dictionary<SubPlayableCharacter, SubPlayableSO>();
 
-#if UNITY_EDITOR
         if (CharacterDataset.Count == 0)
         {
             Debug.LogWarning("ResourceManager :: CharacterDataset Empty");
         }
         else
         {
-            foreach (CharacterInfo info in CharacterDataset)
+            foreach (PlayableSO info in CharacterDataset)
             {
-                Characters[info.character] = info;
+                if (info.Character == PlayableCharacter.RIN && HiddenUnlock == false)
+                    continue;
+
+                Characters[info.Character] = info;
             }
         }
-#else
-        foreach (CharacterInfo info in CharacterDataset)
+
+        if (SubCharacterDataset.Count == 0)
         {
-            Characters[info.character] = info;
+            Debug.LogWarning("ResourceManager :: CharacterDataset Empty");
         }
-#endif
+        else
+        {
+            foreach (SubPlayableSO info in SubCharacterDataset)
+            {
+                if (info.Character == SubPlayableCharacter.MARIA && HiddenUnlock == false)
+                    continue;
 
-
+                SubCharacters[info.Character] = info;
+            }
+        }
     }
 
-    public CharacterInfo GetCharacter(PlayableCharacter _character)
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        InitializeResource();
+    }
+    private void Start()
+    {
+
+        SceneTransition initMenu = Instantiate(LoadingMenu, MainCanvas.Instance.transform);
+        StartCoroutine(ResourceLoad(initMenu));
+    }
+
+    public PlayableSO GetCharacter(PlayableCharacter _character)
     {
         return Characters[_character];
+    }
+
+    private IEnumerator ResourceLoad(SceneTransition _transit)
+    {
+        Debug.Log("Resource Loading");
+        yield return new WaitForSeconds(3.5f);
+
+        Debug.Log("Resource Load Complete");
+        yield return null;
+
+        _transit.LoadingComplete();
     }
 }
